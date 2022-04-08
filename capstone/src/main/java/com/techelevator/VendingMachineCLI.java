@@ -4,6 +4,7 @@ import com.techelevator.view.Menu;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +21,8 @@ public class VendingMachineCLI {
 	private double grossBalance = 0;
 	private Menu menu;
 	private List<Vendable> stock = new ArrayList<>();
+	//DecimalFormat f = new DecimalFormat("##.00");
+	private static final DecimalFormat f = new DecimalFormat("0.00");
 
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;
@@ -68,7 +71,7 @@ public class VendingMachineCLI {
 			String slotID = item.getSlotLocation();
 			String itemName = item.getProductName();
 			double itemPrice = item.getPurchasePrice();
-			String priceString = Double.toString(itemPrice);
+			String priceString = f.format(itemPrice);
 			String itemType = item.getProductType();
 			int numberRemaining = item.getNumberInStock();
 			String remaining = "SOLD OUT";
@@ -86,9 +89,9 @@ public class VendingMachineCLI {
 			int menuSelection = Integer.parseInt(userInput.nextLine());
 			if (menuSelection == 1) {
 				//FEED MONEY
+				System.out.println("Current Money Provided: $" + f.format(moneyInserted));
 				boolean feeding = true;
 				while (feeding) {
-					System.out.println("Current Money Provided: $" + moneyInserted);
 					System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
 					String tendered = userInput.nextLine();
 					if(tendered.equalsIgnoreCase("done")) {
@@ -104,8 +107,8 @@ public class VendingMachineCLI {
 					else {
 						System.out.println("Invalid input.  Please select a listed option.");
 					}
-					System.out.println("Current Money Provided: $" + moneyInserted);
-					AuditLog.log("FEED MONEY: $" + tendered + " $" + moneyInserted);
+					System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+					AuditLog.log("FEED MONEY: $" + tendered + " $" + f.format(moneyInserted));
 				}
 			} else if (menuSelection == 2) {
 				//SELECT A PRODUCT
@@ -114,8 +117,10 @@ public class VendingMachineCLI {
 					vendingMachineItems();
 					System.out.println("Please select an item by its slot ID");
 					String productSelected = userInput.nextLine();
+					boolean exists = false;
 					for(Vendable pick : stock) {
 						if(pick.getSlotLocation().equals(productSelected)) {
+							exists = true;
 							if(pick.getNumberInStock() == 0) {
 								System.out.println("This item has sold out.");
 								selecting = false;
@@ -126,9 +131,9 @@ public class VendingMachineCLI {
 									System.out.println("Vending: "
 											+ pick.getProductName()
 											+ " $"
-											+ pick.getPurchasePrice()
+											+ f.format(pick.getPurchasePrice())
 											+ " Funds Remaining: $"
-											+ (moneyInserted - pick.getPurchasePrice())
+											+ f.format(moneyInserted - pick.getPurchasePrice())
 									);
 									if(pick.getProductType().equals("Chip")) System.out.println("Crunch Crunch, Yum!");
 									else if(pick.getProductType().equals("Candy")) System.out.println("Munch Munch, Yum!");
@@ -139,9 +144,9 @@ public class VendingMachineCLI {
 											+ " "
 											+ pick.getSlotLocation()
 											+ " $"
-											+ moneyInserted
+											+ f.format(moneyInserted)
 											+ " $"
-											+ moneyLeftOver
+											+ f.format(moneyLeftOver)
 									);
 									grossBalance += pick.getPurchasePrice();
 									moneyInserted -= pick.getPurchasePrice();
@@ -156,16 +161,16 @@ public class VendingMachineCLI {
 								}
 							}
 						}
-						else {
-							System.out.println("This product code does not exist.");
-							selecting = false;
-						}
+					}
+					if(!exists) {
+						System.out.println("This product code does not exist.");
+						selecting = false;
 					}
 				}
 			} else if (menuSelection == 3) {
 				//FINISH TRANSACTION
-				System.out.println("Total change: $" + moneyInserted);
-				AuditLog.log("GIVE CHANGE: $" + moneyInserted + " $0.00");
+				System.out.println("Total change: $" + f.format(moneyInserted));
+				AuditLog.log("GIVE CHANGE: $" + f.format(moneyInserted) + " $0.00");
 				int nickels = 0;
 				int dimes = 0;
 				int quarters = 0;
@@ -183,7 +188,7 @@ public class VendingMachineCLI {
 						nickels++;
 					}
 					else {
-						System.out.println("Tendering error: cannot return $" + moneyInserted);
+						System.out.println("Tendering error: cannot return $" + f.format(moneyInserted));
 					}
 				}
 				if(quarters > 0) System.out.println("Quarters returned: " + quarters);

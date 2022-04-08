@@ -1,5 +1,7 @@
 package com.techelevator;
 
+import java.text.DecimalFormat;
+
 public class Vendable {
 
     private String slotLocation;
