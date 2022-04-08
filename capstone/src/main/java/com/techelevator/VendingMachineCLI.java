@@ -91,15 +91,15 @@ public class VendingMachineCLI {
 					System.out.println("Current Money Provided: $" + moneyInserted);
 					System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
 					String tendered = userInput.nextLine();
-					if(Integer.parseInt(tendered) == 1
+					if(tendered.equalsIgnoreCase("done")) {
+						feeding = false;
+					}
+					else if(Integer.parseInt(tendered) == 1
 							|| Integer.parseInt(tendered) == 2
 							|| Integer.parseInt(tendered) == 5
 							|| Integer.parseInt(tendered) == 10
 					) {
 						moneyInserted += Double.parseDouble(tendered);
-					}
-					else if(tendered.equalsIgnoreCase("done")) {
-						feeding = false;
 					}
 					else {
 						System.out.println("Invalid input.  Please select a listed option.");
@@ -119,6 +119,7 @@ public class VendingMachineCLI {
 							if(pick.getNumberInStock() == 0) {
 								System.out.println("This item has sold out.");
 								selecting = false;
+								break;
 							}
 							else {
 								if(moneyInserted >= pick.getPurchasePrice()) {
@@ -127,7 +128,7 @@ public class VendingMachineCLI {
 											+ " $"
 											+ pick.getPurchasePrice()
 											+ " Funds Remaining: $"
-											+ moneyInserted
+											+ (moneyInserted - pick.getPurchasePrice())
 									);
 									if(pick.getProductType().equals("Chip")) System.out.println("Crunch Crunch, Yum!");
 									else if(pick.getProductType().equals("Candy")) System.out.println("Munch Munch, Yum!");
@@ -151,6 +152,7 @@ public class VendingMachineCLI {
 								else {
 									System.out.println("This item costs more than the amount tendered.");
 									selecting = false;
+									break;
 								}
 							}
 						}
