@@ -28,8 +28,8 @@ public class VendingMachineCLI {
 		this.menu = menu;
 	}
 
-	public void run() {
-		File dataFile = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\vendingmachine.csv");
+	public void run() {//C:\
+		File dataFile = new File("C:\\Users\\johne\\OneDrive\\Desktop\\Capstone\\module-1-capstone\\capstone\\vendingmachine.csv");
 		try (Scanner dataInput = new Scanner(dataFile)) {
 			while(dataInput.hasNextLine()) {
 				String lineOfInput = dataInput.nextLine();
@@ -89,115 +89,135 @@ public class VendingMachineCLI {
 			int menuSelection = Integer.parseInt(userInput.nextLine());
 			if (menuSelection == 1) {
 				//FEED MONEY
-				System.out.println("Current Money Provided: $" + f.format(moneyInserted));
-				boolean feeding = true;
-				while (feeding) {
-					System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
-					String tendered = userInput.nextLine();
-					if(tendered.equalsIgnoreCase("done")) {
-						feeding = false;
-					}
-					else if(Integer.parseInt(tendered) == 1
-							|| Integer.parseInt(tendered) == 2
-							|| Integer.parseInt(tendered) == 5
-							|| Integer.parseInt(tendered) == 10
-					) {
-						moneyInserted += Double.parseDouble(tendered);
-					}
-					else {
-						System.out.println("Invalid input.  Please select a listed option.");
-					}
-					System.out.println("Current Money Provided: $" + f.format(moneyInserted));
-					AuditLog.log("FEED MONEY: $" + tendered + " $" + f.format(moneyInserted));
-				}
+				feedMoney();
 			} else if (menuSelection == 2) {
 				//SELECT A PRODUCT
-				boolean selecting = true;
-				while (selecting) {
-					vendingMachineItems();
-					System.out.println("Please select an item by its slot ID");
-					String productSelected = userInput.nextLine();
-					boolean exists = false;
-					for(Vendable pick : stock) {
-						if(pick.getSlotLocation().equals(productSelected)) {
-							exists = true;
-							if(pick.getNumberInStock() == 0) {
-								System.out.println("This item has sold out.");
-								selecting = false;
-								break;
-							}
-							else {
-								if(moneyInserted >= pick.getPurchasePrice()) {
-									System.out.println("Vending: "
-											+ pick.getProductName()
-											+ " $"
-											+ f.format(pick.getPurchasePrice())
-											+ " Funds Remaining: $"
-											+ f.format(moneyInserted - pick.getPurchasePrice())
-									);
-									if(pick.getProductType().equals("Chip")) System.out.println("Crunch Crunch, Yum!");
-									else if(pick.getProductType().equals("Candy")) System.out.println("Munch Munch, Yum!");
-									else if(pick.getProductType().equals("Drink")) System.out.println("Glug Glug, Yum!");
-									else if(pick.getProductType().equals("Gum")) System.out.println("Chew Chew, Yum!");
-									double moneyLeftOver = moneyInserted - pick.getPurchasePrice();
-									AuditLog.log(pick.getProductName()
-											+ " "
-											+ pick.getSlotLocation()
-											+ " $"
-											+ f.format(moneyInserted)
-											+ " $"
-											+ f.format(moneyLeftOver)
-									);
-									grossBalance += pick.getPurchasePrice();
-									moneyInserted -= pick.getPurchasePrice();
-									int newValue = pick.getNumberInStock() - 1;
-									pick.setNumberInStock(newValue);
-									selecting = false;
-								}
-								else {
-									System.out.println("This item costs more than the amount tendered.");
-									selecting = false;
-									break;
-								}
-							}
-						}
-					}
-					if(!exists) {
-						System.out.println("This product code does not exist.");
-						selecting = false;
-					}
-				}
+				purchaseProduct();
+
 			} else if (menuSelection == 3) {
 				//FINISH TRANSACTION
-				System.out.println("Total change: $" + f.format(moneyInserted));
-				AuditLog.log("GIVE CHANGE: $" + f.format(moneyInserted) + " $0.00");
-				int nickels = 0;
-				int dimes = 0;
-				int quarters = 0;
-				while(moneyInserted > 0) {
-					if(moneyInserted >= 0.25) {
-						moneyInserted -= 0.25;
-						quarters++;
-					}
-					else if(moneyInserted >= 0.1) {
-						moneyInserted -= 0.1;
-						dimes++;
-					}
-					else if(moneyInserted >= 0.05) {
-						moneyInserted -= .05;
-						nickels++;
-					}
-					else {
-						System.out.println("Tendering error: cannot return $" + f.format(moneyInserted));
-					}
-				}
-				if(quarters > 0) System.out.println("Quarters returned: " + quarters);
-				if(dimes > 0) System.out.println("Dimes returned: " + dimes);
-				if(nickels > 0) System.out.println("Nickels returned: " + nickels);
-				valid = true;
+				valid = finishedTransaction();
+
 			} else {
 				System.out.println("Invalid selection.  Please select an available menu option.");
 			}
 		}
 	}
+
+	public void feedMoney(){
+		System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+		boolean feeding = true;
+		while (feeding) {
+			System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
+			String tendered = userInput.nextLine();
+			if(tendered.equalsIgnoreCase("done")) {
+				feeding = false;
+			}
+			else if(Integer.parseInt(tendered) == 1
+					|| Integer.parseInt(tendered) == 2
+					|| Integer.parseInt(tendered) == 5
+					|| Integer.parseInt(tendered) == 10
+			) {
+				moneyInserted += Double.parseDouble(tendered);
+			}
+			else {
+				System.out.println("Invalid input.  Please select a listed option.");
+			}
+			System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+			AuditLog.log("FEED MONEY: $" + tendered + " $" + f.format(moneyInserted));
+		}
+	}
+
+	public void purchaseProduct(){
+
+		boolean selecting = true;
+		while (selecting) {
+			vendingMachineItems();
+			System.out.println("Please select an item by its slot ID");
+			String productSelected = userInput.nextLine();
+			boolean exists = false;
+			for(Vendable pick : stock) {
+				if(pick.getSlotLocation().equals(productSelected)) {
+					exists = true;
+					if(pick.getNumberInStock() == 0) {
+						System.out.println("This item has sold out.");
+						selecting = false;
+						break;
+					}
+					else {
+						if(moneyInserted >= pick.getPurchasePrice()) {
+							System.out.println("Vending: "
+									+ pick.getProductName()
+									+ " $"
+									+ f.format(pick.getPurchasePrice())
+									+ " Funds Remaining: $"
+									+ f.format(moneyInserted - pick.getPurchasePrice())
+							);
+							if(pick.getProductType().equals("Chip")) System.out.println("Crunch Crunch, Yum!");
+							else if(pick.getProductType().equals("Candy")) System.out.println("Munch Munch, Yum!");
+							else if(pick.getProductType().equals("Drink")) System.out.println("Glug Glug, Yum!");
+							else if(pick.getProductType().equals("Gum")) System.out.println("Chew Chew, Yum!");
+							double moneyLeftOver = moneyInserted - pick.getPurchasePrice();
+							AuditLog.log(pick.getProductName()
+									+ " "
+									+ pick.getSlotLocation()
+									+ " $"
+									+ f.format(moneyInserted)
+									+ " $"
+									+ f.format(moneyLeftOver)
+							);
+							grossBalance += pick.getPurchasePrice();
+							moneyInserted -= pick.getPurchasePrice();
+							int newValue = pick.getNumberInStock() - 1;
+							pick.setNumberInStock(newValue);
+							selecting = false;
+						}
+						else {
+							System.out.println("This item costs more than the amount tendered.");
+							selecting = false;
+							break;
+						}
+					}
+				}
+			}
+			if(!exists) {
+				System.out.println("This product code does not exist.");
+				selecting = false;
+			}
+		}
+
+	}
+
+	public boolean finishedTransaction(){
+		System.out.println("Total change: $" + f.format(moneyInserted));
+		AuditLog.log("GIVE CHANGE: $" + f.format(moneyInserted) + " $0.00");
+		int nickels = 0;
+		int dimes = 0;
+		int quarters = 0;
+		while(moneyInserted > 0) {
+			if(moneyInserted >= 0.25) {
+				moneyInserted -= 0.25;
+				quarters++;
+			}
+			else if(moneyInserted >= 0.1) {
+				moneyInserted -= 0.1;
+				dimes++;
+			}
+			else if(moneyInserted >= 0.05) {
+				moneyInserted -= .05;
+				nickels++;
+			}
+			else {
+				System.out.println("Tendering error: cannot return $" + f.format(moneyInserted));
+			}
+		}
+		if(quarters > 0) System.out.println("Quarters returned: " + quarters);
+		if(dimes > 0) System.out.println("Dimes returned: " + dimes);
+		if(nickels > 0) System.out.println("Nickels returned: " + nickels);
+		return true;
+
+
+	}
+
+
 }
