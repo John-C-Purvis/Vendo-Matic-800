@@ -29,7 +29,7 @@ public class VendingMachineCLI {
 	}
 
 	public void run() {//C:\
-		File dataFile = new File("C:\\Users\\johne\\OneDrive\\Desktop\\Capstone\\module-1-capstone\\capstone\\vendingmachine.csv");
+		File dataFile = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\vendingmachine.csv");
 		try (Scanner dataInput = new Scanner(dataFile)) {
 			while(dataInput.hasNextLine()) {
 				String lineOfInput = dataInput.nextLine();
