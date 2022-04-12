@@ -16,4 +16,5 @@ public class AuditLog {
             System.out.println("An error has occurred.");
         }
     }
+
 }

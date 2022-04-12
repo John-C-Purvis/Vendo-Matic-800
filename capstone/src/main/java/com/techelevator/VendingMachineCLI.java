@@ -1,19 +1,17 @@
 package com.techelevator;
 
+//import com.company.Vendable;
 import com.techelevator.view.Menu;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class VendingMachineCLI {
+
 
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
@@ -28,46 +26,48 @@ public class VendingMachineCLI {
 	private List<Vendable> stock = new ArrayList<>();
 	private static final DecimalFormat f = new DecimalFormat("0.00");
 
+
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;
 	}
 
 	public void run() {
-		File dataFile = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\vendingmachine.csv");
-		try (Scanner dataInput = new Scanner(dataFile)) {
-			while(dataInput.hasNextLine()) {
-				String lineOfInput = dataInput.nextLine();
-				String[] splitInput = lineOfInput.split("\\|");
-				Vendable stockItem = new Vendable(
-						splitInput[0],
-						splitInput[1],
-						Double.parseDouble(splitInput[2]),
-						splitInput[3],
-						MAX_STOCK_LEVEL
-				);
-				stock.add(stockItem);
+			File dataFile = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\vendingmachine.csv");
+			try (Scanner dataInput = new Scanner(dataFile)) {
+				while(dataInput.hasNextLine()) {
+					String lineOfInput = dataInput.nextLine();
+					String[] splitInput = lineOfInput.split("\\|");
+					Vendable stockItem = new Vendable(
+							splitInput[0],
+							splitInput[1],
+							Double.parseDouble(splitInput[2]),
+							splitInput[3],
+							MAX_STOCK_LEVEL
+					);
+					stock.add(stockItem);
+				}
+			} catch (FileNotFoundException e) {
+				System.err.println("The file does not exist.");
 			}
-		} catch (FileNotFoundException e) {
-			System.err.println("The file does not exist.");
-		}
-		while (true) {
-			String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
-			if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
-				// display vending machine items
-				vendingMachineItems();
-			} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
-				// do purchase
-				purchasingProcessMenu();
-			} else if (choice.equals(MAIN_MENU_OPTION_EXIT)) {
-				System.exit(0);
-			} else if (choice.equals(MAIN_MENU_OPTION_REPORT)) {
-				//secret sales report option
-				reportSales();
+			while (true) {
+				String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
+				if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
+					// display vending machine items
+					vendingMachineItems();
+				} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
+					// do purchase
+					purchasingProcessMenu();
+				} else if (choice.equals(MAIN_MENU_OPTION_EXIT)) {
+					System.exit(0);
+				} else if (choice.equals(MAIN_MENU_OPTION_REPORT)) {
+					//secret sales report option
+					reportSales();
+				}
 			}
 		}
-	}
 
-	public static void main(String[] args) {
+
+		public static void main(String[] args) {
 		Menu menu = new Menu(System.in, System.out);
 		VendingMachineCLI cli = new VendingMachineCLI(menu);
 		cli.run();
@@ -94,135 +94,213 @@ public class VendingMachineCLI {
 		boolean valid = false;
 		while(!valid) {
 			for (String options : purchasingOptions) System.out.println(options);
-			String userSelection = userInput.nextLine();
-			try {
-				Integer.parseInt(userSelection);
-				int menuSelection = Integer.parseInt(userSelection);
-				if (menuSelection == 1) {
-					//FEED MONEY
-					feedMoney();
-				} else if (menuSelection == 2) {
-					//SELECT A PRODUCT
-					purchaseProduct();
+			int menuSelection = Integer.parseInt(userInput.nextLine());
+			if (menuSelection == 1) {
+				//FEED MONEY
+				feedMoney();
+			} else if (menuSelection == 2) {
+				//SELECT A PRODUCT
+				purchaseProduct();
 
-				} else if (menuSelection == 3) {
-					//FINISH TRANSACTION
-					valid = finishedTransaction();
+			} else if (menuSelection == 3) {
+				//FINISH TRANSACTION
+				finishedTransaction(moneyInserted);
+				valid = true;
 
-				} else {
-					System.out.println("Invalid selection.  Please select an available menu option.");
-				}
-			}
-			catch( Exception e ) {
+			} else {
 				System.out.println("Invalid selection.  Please select an available menu option.");
 			}
 		}
 	}
 
 	public void feedMoney(){
-		System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+		//System.out.println("Current Money Provided: $" + f.format(moneyInserted));
 		boolean feeding = true;
 		while (feeding) {
 			System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
 			String tendered = userInput.nextLine();
-			if(tendered.equalsIgnoreCase("done")) {
-				feeding = false;
-			}
-			else if(Integer.parseInt(tendered) == 1
-					|| Integer.parseInt(tendered) == 2
-					|| Integer.parseInt(tendered) == 5
-					|| Integer.parseInt(tendered) == 10
-			) {
-				moneyInserted += Double.parseDouble(tendered);
-			}
-			else {
-				System.out.println("Invalid input.  Please select a listed option.");
-			}
+
+
+			MoneyAccepted(tendered);
+			feeding = InvalidOption(tendered);
+
 			System.out.println("Current Money Provided: $" + f.format(moneyInserted));
 			AuditLog.log("FEED MONEY: $" + tendered + " $" + f.format(moneyInserted));
 		}
 	}
 
+	public double MoneyAccepted(String tendered){
+		try {
+			Integer.parseInt(tendered);
+		}
+		catch( NumberFormatException e ){
+			System.out.println("Invalid selection.  Please select an available menu option.");
+			return 0;
+		}
+
+		if (tendered.equalsIgnoreCase("done"))
+			return 0;
+
+		int dollar = Integer.parseInt(tendered);
+		if(dollar == 1 || dollar == 2 || dollar == 5 || dollar  == 10) {
+			moneyInserted += Double.parseDouble(tendered);
+			return moneyInserted;
+		}
+		return 0;
+	}
+
+	public boolean InvalidOption(String option) {
+		//String[] selection = {"1", "2", "5", "10"};
+		//System.out.println(selection);
+
+		if (option.equalsIgnoreCase("done"))
+			return false;
+		else if(option.equals("1") || option.equals("2") || option.equals("5") || option.equals("10"))
+			return true;
+		else{
+			System.out.println("Invalid input. Please select a listed option.\n");
+			return true;
+		}
+
+
+	}
+
+	//ENDS FEEDMONEY
+
+
+
+
 	public void purchaseProduct(){
+
+		//boolean selecting = true;
+		//while (selecting) {
 		vendingMachineItems();
 		System.out.println("Please select an item by its slot ID");
 		String productSelected = userInput.nextLine();
 		boolean exists = false;
-		for(Vendable pick : stock) {
+		for (Vendable pick : stock) {
 			if (pick.getSlotLocation().equals(productSelected)) {
 				exists = true;
-				if (pick.getNumberInStock() == 0) {
-					System.out.println("This item has sold out.");
-					break;
-				} else {
-					if (moneyInserted >= pick.getPurchasePrice()) {
-						System.out.println("Vending: "
-								+ pick.getProductName()
-								+ " $"
-								+ f.format(pick.getPurchasePrice())
-								+ " Funds Remaining: $"
-								+ f.format(moneyInserted - pick.getPurchasePrice())
-						);
-						if (pick.getProductType().equals("Chip")) System.out.println("Crunch Crunch, Yum!");
-						else if (pick.getProductType().equals("Candy")) System.out.println("Munch Munch, Yum!");
-						else if (pick.getProductType().equals("Drink")) System.out.println("Glug Glug, Yum!");
-						else if (pick.getProductType().equals("Gum")) System.out.println("Chew Chew, Yum!");
-						double moneyLeftOver = moneyInserted - pick.getPurchasePrice();
-						AuditLog.log(pick.getProductName()
-								+ " "
-								+ pick.getSlotLocation()
-								+ " $"
-								+ f.format(moneyInserted)
-								+ " $"
-								+ f.format(moneyLeftOver)
-						);
-						grossBalance += pick.getPurchasePrice();
-						moneyInserted -= pick.getPurchasePrice();
-						int newValue = pick.getNumberInStock() - 1;
-						pick.setNumberInStock(newValue);
-					} else {
-						System.out.println("This item costs more than the amount tendered.");
-						break;
-					}
-				}
+				itemWasFound(pick, moneyInserted);//should break if false
+				//break;
 			}
 		}
-		if(!exists) {
-				System.out.println("This product code does not exist.");
+		if (!exists) {
+			System.out.println("This product code does not exist.");
+			//selecting = false;
 		}
+		//}
+
 
 	}
 
-	public boolean finishedTransaction(){
+
+	public boolean itemWasFound(Vendable pick, double moneyOnHand) {
+		switch (pick.getNumberInStock()) {
+			case 0: {
+				System.out.println("This item has sold out.");
+				return false;
+			}
+			default: {
+				if (moneyOnHand >= pick.getPurchasePrice()) {
+					System.out.println("Vending: "
+							+ pick.getProductName()
+							+ " $"
+							+ pick.getPurchasePrice()
+							+ " Funds Remaining: $"
+							+ (moneyOnHand - pick.getPurchasePrice())
+					);
+
+					String type = pick.getProductType();
+					System.out.println(snackSound(type));
+
+					double moneyLeftOver = moneyOnHand - pick.getPurchasePrice();
+                    AuditLog.log(pick.getProductName()
+                            + " "
+                            + pick.getSlotLocation()
+                            + " $"
+                            + f.format(moneyOnHand)
+                            + " $"
+                            + f.format(moneyLeftOver)
+                    );
+					grossBalance += pick.getPurchasePrice();
+					moneyOnHand -= pick.getPurchasePrice();
+					int newValue = pick.getNumberInStock() - 1;
+					pick.setNumberInStock(newValue);
+					return true;
+					//break;
+				} else {
+					System.out.println("This item costs more than the amount tendered.");
+					return false;
+					//break;
+				}
+
+			}
+
+		}
+	}
+
+
+	public String snackSound(String type){
+
+		String outputMessage = " ";
+		if (type.equals("Chip")) outputMessage = "Crunch Crunch, Yum!";
+		else if (type.equals("Candy")) outputMessage = "Munch Munch, Yum!";
+		else if (type.equals("Drink")) outputMessage = "Glug Glug, Yum!";
+		else if (type.equals("Gum")) outputMessage = "Chew Chew, Yum!";
+		return outputMessage;
+
+	}
+
+	//ENDS PURCHASE PRODUCT
+
+	public String finishedTransaction(double money){
+
 		System.out.println("Total change: $" + f.format(moneyInserted));
 		AuditLog.log("GIVE CHANGE: $" + f.format(moneyInserted) + " $0.00");
-		int nickels = 0;
-		int dimes = 0;
-		int quarters = 0;
+		int[] quartersDimeNickle = new int[3];
+		int qc = 0;
+		int dc = 0;
+		int nc = 0;
+
+		double moneyInserted = money;
+
 		while(moneyInserted > 0) {
 			if(moneyInserted >= 0.25) {
 				moneyInserted -= 0.25;
-				quarters++;
+				qc++;
+				quartersDimeNickle[0] = qc;
 			}
 			else if(moneyInserted >= 0.1) {
 				moneyInserted -= 0.1;
-				dimes++;
+				dc++;
+				quartersDimeNickle[1] = dc;
 			}
 			else if(moneyInserted >= 0.05) {
 				moneyInserted -= .05;
-				nickels++;
+				nc++;
+				quartersDimeNickle[2] = nc;
+
 			}
-			else if (moneyInserted < 0.05) {
+			else if(moneyInserted < .01){
 				moneyInserted = 0;
+
 			}
 			else {
 				System.out.println("Tendering error: cannot return $" + f.format(moneyInserted));
+				System.out.println("Tendering error: cannot return $" + moneyInserted);
 			}
 		}
-		if(quarters > 0) System.out.println("Quarters returned: " + quarters);
-		if(dimes > 0) System.out.println("Dimes returned: " + dimes);
-		if(nickels > 0) System.out.println("Nickels returned: " + nickels);
-		return true;
+
+
+		if(quartersDimeNickle[0] > 0) System.out.println("Quarters returned: " + quartersDimeNickle[0]);
+		if(quartersDimeNickle[1] > 0) System.out.println("Dimes returned: " + quartersDimeNickle[1]);
+		if(quartersDimeNickle[2] > 0) System.out.println("Nickels returned: " + quartersDimeNickle[2]);
+		return Arrays.toString(quartersDimeNickle) ;
+
+
+
+
 	}
 
 	public void reportSales() {
@@ -230,7 +308,7 @@ public class VendingMachineCLI {
 		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy_HH-mm-ss_a");
 		Date timeStamp = new Date(System.currentTimeMillis());
 		//build path and filename for sales report file (adapt this to the local directory structure)
-		String dataPath = "C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\src\\main\\java\\com\\techelevator\\";
+		File dataPath = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\src\\main\\java\\com\\techelevator\\");
 		String dataFile = dataPath + "Vending_Machine_Sales_Report_" + formatter.format(timeStamp) + ".txt";
 		//write statistics to sales report
 		File reportFile = new File(dataFile);
@@ -249,4 +327,17 @@ public class VendingMachineCLI {
 			System.out.println("An error has occurred.");
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
