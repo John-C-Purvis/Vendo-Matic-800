@@ -48,17 +48,10 @@ public class Menu {
 
 	//displays menu options to the user
 	private void displayMenuOptions(Object[] options) {
-<<<<<<< HEAD
 		out.println(); //prints a blank line to the console
 		for (int i = 0; i < options.length - 1; i++) { //loops through all menu options
 			int optionNum = i + 1; //offsets options from indexing standard
 			out.println(optionNum + ") " + options[i]); //displays option to the user via the console
-=======
-		out.println();
-		for (int i = 0; i < options.length - 1; i++) {
-			int optionNum = i + 1;
-			out.println(optionNum + ") " + options[i]);
->>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 		}
 		out.print(System.lineSeparator() + "Please choose an option >>> "); //prompts the user to make a selection
 		out.flush(); //flushes the output
