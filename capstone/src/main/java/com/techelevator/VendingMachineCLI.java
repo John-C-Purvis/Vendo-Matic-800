@@ -1,18 +1,26 @@
 package com.techelevator;
 
+<<<<<<< HEAD
 //expandable list of imports...
+=======
+//import com.company.Vendable;
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 import com.techelevator.view.Menu;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+<<<<<<< HEAD
 import java.math.BigDecimal;
+=======
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class VendingMachineCLI {
 
+<<<<<<< HEAD
 	//establish constants (magic numbers) for use by reference
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items"; //shows stock
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase"; //adds money and select purchase
@@ -39,10 +47,28 @@ public class VendingMachineCLI {
 	private static final DecimalFormat f = new DecimalFormat("0.00"); //establishes a format for money output
 
 	//default constructor for primary object
+=======
+
+	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
+	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
+	private static final String MAIN_MENU_OPTION_EXIT = "Exit";//adds the option to exit out of the program
+	private static final String MAIN_MENU_OPTION_REPORT = "";
+	private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE, MAIN_MENU_OPTION_EXIT, MAIN_MENU_OPTION_REPORT};
+	private static final int MAX_STOCK_LEVEL = 5;
+	private Scanner userInput = new Scanner(System.in);//added
+	private double moneyInserted = 0;//keep count of the money inserted by user;
+	private double grossBalance = 0;
+	private Menu menu;
+	private List<Vendable> stock = new ArrayList<>();
+	private static final DecimalFormat f = new DecimalFormat("0.00");
+
+
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;
 	}
 
+<<<<<<< HEAD
 	//MAIN method - launch machine operations
 	public static void main(String[] args) {
 
@@ -75,10 +101,43 @@ public class VendingMachineCLI {
 						MAX_STOCK_LEVEL //sets stock level to maximum capacity
 				);
 				stock.add(stockItem); //adds item object to list of stocked items
+=======
+	public void run() {
+			File dataFile = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\vendingmachine.csv");
+			try (Scanner dataInput = new Scanner(dataFile)) {
+				while(dataInput.hasNextLine()) {
+					String lineOfInput = dataInput.nextLine();
+					String[] splitInput = lineOfInput.split("\\|");
+					Vendable stockItem = new Vendable(
+							splitInput[0],
+							splitInput[1],
+							Double.parseDouble(splitInput[2]),
+							splitInput[3],
+							MAX_STOCK_LEVEL
+					);
+					stock.add(stockItem);
+				}
+			} catch (FileNotFoundException e) {
+				System.err.println("The file does not exist.");
 			}
-		} catch (FileNotFoundException e) {
-			System.err.println("The file does not exist.");
+			while (true) {
+				String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
+				if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
+					// display vending machine items
+					vendingMachineItems();
+				} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
+					// do purchase
+					purchasingProcessMenu();
+				} else if (choice.equals(MAIN_MENU_OPTION_EXIT)) {
+					System.exit(0);
+				} else if (choice.equals(MAIN_MENU_OPTION_REPORT)) {
+					//secret sales report option
+					reportSales();
+				}
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
+			}
 		}
+<<<<<<< HEAD
 
 		//set machine to run continuously until exited
 		while (true) {
@@ -103,6 +162,17 @@ public class VendingMachineCLI {
 	}
 
 	//selected option [1] displays a list of vending machine items
+=======
+
+
+		public static void main(String[] args) {
+		Menu menu = new Menu(System.in, System.out);
+		VendingMachineCLI cli = new VendingMachineCLI(menu);
+		cli.run();
+	}
+
+	//when entering 1 displays a list of vending machine items
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 	public void vendingMachineItems() {
 
 		//loop through each item in stock
@@ -153,6 +223,7 @@ public class VendingMachineCLI {
 
 			//evaluate selection and navigate to selected function
 			if (menuSelection == 1) {
+<<<<<<< HEAD
 				feedMoney(); //routes user to money feeding menu
 			}
 			else if (menuSelection == 2) {
@@ -163,6 +234,20 @@ public class VendingMachineCLI {
 				valid = true; //sets valid selection to exit selection loop
 			}
 			else { //indicates to the user that selection was not valid and return to start of loop to retry input
+=======
+				//FEED MONEY
+				feedMoney();
+			} else if (menuSelection == 2) {
+				//SELECT A PRODUCT
+				purchaseProduct();
+
+			} else if (menuSelection == 3) {
+				//FINISH TRANSACTION
+				finishedTransaction(moneyInserted);
+				valid = true;
+
+			} else {
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 				System.out.println("Invalid selection.  Please select an available menu option.");
 			}
 		}
@@ -170,12 +255,17 @@ public class VendingMachineCLI {
 
 	//feed money into the machine and update amount of user's money pending action
 	public void feedMoney(){
+<<<<<<< HEAD
 
 		//initialize boolean indicating that money-feeding is in progress
+=======
+		//System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 		boolean feeding = true;
 
 		//loop through money-feeding cycle while money-feeding is in progress
 		while (feeding) {
+<<<<<<< HEAD
 			System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE"); //prompts user for an amount to feed in
 			String tendered = userInput.nextLine(); //captures user input
 			boolean safeToLog = false; //instantiates a boolean indicating whether or not the transaction should be written to the log
@@ -251,12 +341,59 @@ public class VendingMachineCLI {
 				purchaseItem(moneyInserted, i); //executes the purchase attempt
 				i = stock.size(); //sets iterator to end the loop
 			}
+=======
+			System.out.println("Please insert a dollar amount: 1, 2, 5, 10 or DONE");
+			String tendered = userInput.nextLine();
+
+
+			MoneyAccepted(tendered);
+			feeding = InvalidOption(tendered);
+
+			System.out.println("Current Money Provided: $" + f.format(moneyInserted));
+			AuditLog.log("FEED MONEY: $" + tendered + " $" + f.format(moneyInserted));
 		}
+	}
+
+	public double MoneyAccepted(String tendered){
+		try {
+			Integer.parseInt(tendered);
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
+		}
+		catch( NumberFormatException e ){
+			System.out.println("Invalid selection.  Please select an available menu option.");
+			return 0;
+		}
+
+		if (tendered.equalsIgnoreCase("done"))
+			return 0;
+
+		int dollar = Integer.parseInt(tendered);
+		if(dollar == 1 || dollar == 2 || dollar == 5 || dollar  == 10) {
+			moneyInserted += Double.parseDouble(tendered);
+			return moneyInserted;
+		}
+		return 0;
+	}
+
+	public boolean InvalidOption(String option) {
+		//String[] selection = {"1", "2", "5", "10"};
+		//System.out.println(selection);
+
+		if (option.equalsIgnoreCase("done"))
+			return false;
+		else if(option.equals("1") || option.equals("2") || option.equals("5") || option.equals("10"))
+			return true;
+		else{
+			System.out.println("Invalid input. Please select a listed option.\n");
+			return true;
+		}
+
 
 		//handle a selection that is not a valid slot ID
 		if (!exists) System.out.println("This product code does not exist."); //informs user and return to menu
 	}
 
+<<<<<<< HEAD
 	//determine if slot provided by user input matches slot ID of item called
 	public boolean isSlotFound(String userSlot, String actualSlot) {
 		if (userSlot.equals(actualSlot)) return true; //user input matches slot, returns true
@@ -281,6 +418,182 @@ public class VendingMachineCLI {
 
 	//attempt purchase based on money in escrow and item selected
 	public boolean purchaseItem(double money, int position){
+=======
+	//ENDS FEEDMONEY
+
+
+
+
+	public void purchaseProduct(){
+
+		//boolean selecting = true;
+		//while (selecting) {
+		vendingMachineItems();
+		System.out.println("Please select an item by its slot ID");
+		String productSelected = userInput.nextLine();
+		boolean exists = false;
+		for (Vendable pick : stock) {
+			if (pick.getSlotLocation().equals(productSelected)) {
+				exists = true;
+				itemWasFound(pick, moneyInserted);//should break if false
+				//break;
+			}
+		}
+		if (!exists) {
+			System.out.println("This product code does not exist.");
+			//selecting = false;
+		}
+		//}
+
+
+	}
+
+
+	public boolean itemWasFound(Vendable pick, double moneyOnHand) {
+		switch (pick.getNumberInStock()) {
+			case 0: {
+				System.out.println("This item has sold out.");
+				return false;
+			}
+			default: {
+				if (moneyOnHand >= pick.getPurchasePrice()) {
+					System.out.println("Vending: "
+							+ pick.getProductName()
+							+ " $"
+							+ pick.getPurchasePrice()
+							+ " Funds Remaining: $"
+							+ (moneyOnHand - pick.getPurchasePrice())
+					);
+
+					String type = pick.getProductType();
+					System.out.println(snackSound(type));
+
+					double moneyLeftOver = moneyOnHand - pick.getPurchasePrice();
+                    AuditLog.log(pick.getProductName()
+                            + " "
+                            + pick.getSlotLocation()
+                            + " $"
+                            + f.format(moneyOnHand)
+                            + " $"
+                            + f.format(moneyLeftOver)
+                    );
+					grossBalance += pick.getPurchasePrice();
+					moneyOnHand -= pick.getPurchasePrice();
+					int newValue = pick.getNumberInStock() - 1;
+					pick.setNumberInStock(newValue);
+					return true;
+					//break;
+				} else {
+					System.out.println("This item costs more than the amount tendered.");
+					return false;
+					//break;
+				}
+
+			}
+
+		}
+	}
+
+
+	public String snackSound(String type){
+
+		String outputMessage = " ";
+		if (type.equals("Chip")) outputMessage = "Crunch Crunch, Yum!";
+		else if (type.equals("Candy")) outputMessage = "Munch Munch, Yum!";
+		else if (type.equals("Drink")) outputMessage = "Glug Glug, Yum!";
+		else if (type.equals("Gum")) outputMessage = "Chew Chew, Yum!";
+		return outputMessage;
+
+	}
+
+	//ENDS PURCHASE PRODUCT
+
+	public String finishedTransaction(double money){
+
+		System.out.println("Total change: $" + f.format(moneyInserted));
+		AuditLog.log("GIVE CHANGE: $" + f.format(moneyInserted) + " $0.00");
+		int[] quartersDimeNickle = new int[3];
+		int qc = 0;
+		int dc = 0;
+		int nc = 0;
+
+		double moneyInserted = money;
+
+		while(moneyInserted > 0) {
+			if(moneyInserted >= 0.25) {
+				moneyInserted -= 0.25;
+				qc++;
+				quartersDimeNickle[0] = qc;
+			}
+			else if(moneyInserted >= 0.1) {
+				moneyInserted -= 0.1;
+				dc++;
+				quartersDimeNickle[1] = dc;
+			}
+			else if(moneyInserted >= 0.05) {
+				moneyInserted -= .05;
+				nc++;
+				quartersDimeNickle[2] = nc;
+
+			}
+			else if(moneyInserted < .01){
+				moneyInserted = 0;
+
+			}
+			else {
+				System.out.println("Tendering error: cannot return $" + f.format(moneyInserted));
+				System.out.println("Tendering error: cannot return $" + moneyInserted);
+			}
+		}
+
+
+		if(quartersDimeNickle[0] > 0) System.out.println("Quarters returned: " + quartersDimeNickle[0]);
+		if(quartersDimeNickle[1] > 0) System.out.println("Dimes returned: " + quartersDimeNickle[1]);
+		if(quartersDimeNickle[2] > 0) System.out.println("Nickels returned: " + quartersDimeNickle[2]);
+		return Arrays.toString(quartersDimeNickle) ;
+
+
+
+
+	}
+
+	public void reportSales() {
+		// set up format for timestamp on sales report filename
+		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy_HH-mm-ss_a");
+		Date timeStamp = new Date(System.currentTimeMillis());
+		//build path and filename for sales report file (adapt this to the local directory structure)
+		File dataPath = new File("C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\src\\main\\java\\com\\techelevator\\");
+		String dataFile = dataPath + "Vending_Machine_Sales_Report_" + formatter.format(timeStamp) + ".txt";
+		//write statistics to sales report
+		File reportFile = new File(dataFile);
+		try (PrintWriter dataOutput = new PrintWriter(reportFile)) {
+			//loop through all stock items and report number of each item sold since restarting the vending machine
+			for(Vendable stockItem : stock) {
+				//build report for each individual stock item
+				String stockName = stockItem.getProductName();
+				int stockSold = MAX_STOCK_LEVEL - stockItem.getNumberInStock();
+				//write the item's statistics to the sales report file
+				dataOutput.println(stockName + "\\|" + stockSold);
+			}
+			//add a final line to the sales report displaying total gross sales since the last restart of the vending machine
+			dataOutput.println("\nTOTAL SALES: $" + f.format(grossBalance));
+		} catch (Exception e) {
+			System.out.println("An error has occurred.");
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
 
 		//determine if money in escrow is adequate for purchase
 		if (moneyInserted >= stock.get(position).getPurchasePrice()) { //money in escrow is adequate

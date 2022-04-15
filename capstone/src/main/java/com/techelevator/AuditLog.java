@@ -7,11 +7,15 @@ import java.util.Date;
 
 public class AuditLog {
     public static void log(String message) {
+<<<<<<< HEAD
 
         //establish path where audit log file is stored
         String dataFile = "C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\src\\main\\java\\com\\techelevator\\Log.txt";
 
         //build output for writing to the audit log file
+=======
+        String dataFile = "C:\\MAJAVA\\Capstones\\module-1-capstone\\capstone\\src\\main\\java\\com\\techelevator\\Log.txt";
+>>>>>>> 435796722e4f79bba79ac907d5e840ede0fc8d87
         try (PrintWriter dataOutput = new PrintWriter(new FileOutputStream(dataFile, true))) {
 
             //set up a format for the timestamp
