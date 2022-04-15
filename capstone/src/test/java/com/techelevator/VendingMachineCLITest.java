@@ -96,12 +96,4 @@ public class VendingMachineCLITest {
         assertEquals(true, machine.isItemFound(true,5));
         assertEquals(false, machine.isItemFound(false,5));
     }
-
-    @Test
-    void purchaseItemTest(){
-        //build test items to test with
-        Vendable stockItem = new Vendable("A1", "testChips", 1.00, "Chip", 1); //instantiates a new test item
-        testProducts.add(stockItem); //adds item object to list of stocked items
-        assertEquals(testProducts.get(1).getSlotLocation(), machine.purchaseItem());
-    }
 }

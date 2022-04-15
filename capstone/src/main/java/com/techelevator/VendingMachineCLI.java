@@ -248,7 +248,7 @@ public class VendingMachineCLI {
 			//check if item exists and is not sold out and if it is valid execute the purchase
 			if(isItemFound(exists, inStock)){
 				double price = stock.get(i).getPurchasePrice(); //assigns item's price to a convenience variable
-				purchaseItem(moneyInserted, i); //executes the purchase attempt
+				completePurchase(moneyInserted, i); //executes the purchase attempt
 				i = stock.size(); //sets iterator to end the loop
 			}
 		}
@@ -280,7 +280,7 @@ public class VendingMachineCLI {
 	}
 
 	//attempt purchase based on money in escrow and item selected
-	public boolean purchaseItem(double money, int position){
+	public void completePurchase(double money, int position){
 
 		//determine if money in escrow is adequate for purchase
 		if (moneyInserted >= stock.get(position).getPurchasePrice()) { //money in escrow is adequate
@@ -314,10 +314,8 @@ public class VendingMachineCLI {
 			moneyInserted -= stock.get(position).getPurchasePrice(); //subtract purchase from escrow amount
 			int newValue = stock.get(position).getNumberInStock() - 1; //store stock level (one unit sold) of purchased item
 			stock.get(position).setNumberInStock(newValue); //apply stored stock level to update sold item
-			return true; //returns true to validate result in unit tests
 		} else { //money in escrow is inadequate to complete this transaction
 			System.out.println("This item costs more than the amount tendered."); //prompts user that item cannot be purchased
-			return false; //returns false to validate results in unit tests
 		}
 	}
 
