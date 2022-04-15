@@ -1,15 +1,15 @@
 package com.techelevator;
 
-import java.text.DecimalFormat;
-
 public class Vendable {
 
-    private String slotLocation;
-    private String productName;
-    private double purchasePrice;
-    private String productType;
-    private int numberInStock;
+    //product properties
+    private String slotLocation; //product's slot location in the vending machine
+    private String productName; //name of the product
+    private double purchasePrice; //how much the product costs per unit
+    private String productType; //type of product
+    private int numberInStock; //quantity stocked in the vending machine
 
+    //constructor initializes each property of the product
     public Vendable(String slotLocation, String productName, double purchasePrice, String productType, int numberInStock) {
         this.slotLocation = slotLocation;
         this.productName = productName;
@@ -17,6 +17,8 @@ public class Vendable {
         this.productType = productType;
         this.numberInStock = numberInStock;
     }
+
+    //getters and setters for each property
 
     public String getSlotLocation() {
         return slotLocation;
